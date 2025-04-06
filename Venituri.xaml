@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BugetPersonal.Venituri"
+             Title="Venituri">
+
+    <VerticalStackLayout>
+        <HorizontalStackLayout Spacing="10">
+            <Image Source="moneybag.png"
+            SemanticProperties.Description="Venituri"
+            HeightRequest="60"/>
+            <Label FontSize="22" FontAttributes="Bold" Text="Venituri" VerticalOptions="End" />
+        </HorizontalStackLayout>
+        <Label Text="Aici poti vedea veniturile tale" />
+
+    </VerticalStackLayout>
+
+</ContentPage>
