@@ -1,5 +1,4 @@
-﻿
-namespace BugetPersonal
+﻿namespace BugetPersonal
 
 {
     public partial class AppShell : Shell

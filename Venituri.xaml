@@ -1,18 +1,227 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BugetPersonal.Venituri"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:local="clr-namespace:BugetPersonal.Models"
+             x:Class="BugetPersonal.VenituriView"
              Title="Venituri">
 
-    <VerticalStackLayout>
-        <HorizontalStackLayout Spacing="10">
-            <Image Source="moneybag.png"
-            SemanticProperties.Description="Venituri"
-            HeightRequest="60"/>
-            <Label FontSize="22" FontAttributes="Bold" Text="Venituri" VerticalOptions="End" />
-        </HorizontalStackLayout>
-        <Label Text="Aici poti vedea veniturile tale" />
+    <ContentPage.BindingContext>
+        <local:VenituriChartViewModel />
+    </ContentPage.BindingContext>
 
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="20">
+            <!-- Header -->
+            <Grid Margin="0,10,0,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
+                <Label Text="Venituri și Cheltuieli" 
+                       FontSize="24" 
+                       FontAttributes="Bold" 
+                       TextColor="#FFFFFF"
+                       Grid.Column="0" />
+
+                <Button Text="+" 
+                        FontSize="20"
+                        WidthRequest="50"
+                        HeightRequest="50" 
+                        CornerRadius="25"
+                        BackgroundColor="#60A5FA"
+                        TextColor="White"
+                        Clicked="OnVenituriTapped"
+                        Grid.Column="1" />
+            </Grid>
+
+            <!-- Sumar -->
+            <Frame BorderColor="#E8E8E8" 
+                   BackgroundColor="#F9F9F9" 
+                   CornerRadius="10" 
+                   Padding="15"
+                   Margin="0,0,0,20">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <VerticalStackLayout Grid.Column="0" Grid.Row="0">
+                        <Label Text="Total Venituri" FontSize="14" TextColor="#666666" />
+                        <Label Text="{Binding TotalIncome, StringFormat='{0:N0} lei'}" FontSize="22" FontAttributes="Bold" TextColor="#3B82F6" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Grid.Row="0">
+                        <Label Text="Total Cheltuieli" FontSize="14" TextColor="#666666" />
+                        <Label Text="{Binding TotalExpense, StringFormat='{0:N0} lei'}" FontSize="22" FontAttributes="Bold" TextColor="#EF4444" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="0" Grid.Row="1" Margin="0,15,0,0">
+                        <Label Text="Sold" FontSize="14" TextColor="#666666" />
+                        <Label Text="{Binding TotalIncome, Converter={StaticResource SubtractConverter}, ConverterParameter={Binding TotalExpense}, StringFormat='{0:N0} lei'}" 
+                               FontSize="24" FontAttributes="Bold" TextColor="#10B981" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Grid.Row="1" Margin="0,15,0,0">
+                        <Label Text="Media lunară" FontSize="14" TextColor="#666666" />
+                        <Label Text="{Binding MonthlyAverage, StringFormat='{0:N0} lei'}" FontSize="22" FontAttributes="Bold" TextColor="#8B5CF6" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- Grafic -->
+            <Label Text="Venituri vs. Cheltuieli" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   TextColor="#FFFFFF"
+                   Margin="0,0,0,10" />
+
+            <Frame BorderColor="#E8E8E8" 
+                   BackgroundColor="White" 
+                   CornerRadius="10" 
+                   Padding="10"
+                   Margin="0,0,0,20"
+                   HeightRequest="350">
+
+                <chart:SfCartesianChart>
+                    <chart:SfCartesianChart.XAxes>
+                        <chart:CategoryAxis>
+                            <chart:CategoryAxis.Title>
+                                <chart:ChartAxisTitle Text="Lună" />
+                            </chart:CategoryAxis.Title>
+                        </chart:CategoryAxis>
+                    </chart:SfCartesianChart.XAxes>
+
+                    <chart:SfCartesianChart.YAxes>
+                        <chart:NumericalAxis>
+                            <chart:NumericalAxis.Title>
+                                <chart:ChartAxisTitle Text="Lei" />
+                            </chart:NumericalAxis.Title>
+                            <chart:NumericalAxis.LabelStyle>
+                                <chart:ChartAxisLabelStyle LabelFormat="N0" />
+                            </chart:NumericalAxis.LabelStyle>
+                        </chart:NumericalAxis>
+                    </chart:SfCartesianChart.YAxes>
+
+                    <chart:SfCartesianChart.Series>
+                        <chart:ColumnSeries ItemsSource="{Binding MonthlyData}" 
+                                           XBindingPath="Month" 
+                                           YBindingPath="Income"
+                                           Label="Venit"
+                                           ShowDataLabels="True"
+                                           Spacing="0.2"
+                                           EnableTooltip="True"
+                                           Fill="#8B5CF6">
+                            <chart:ColumnSeries.TrackballLabelTemplate>
+                                <DataTemplate>
+                                    <HorizontalStackLayout>
+                                        <Label Text="{Binding Item.Income, StringFormat='{0:N0} lei'}" 
+                                               TextColor="White" 
+                                               BackgroundColor="#8B5CF6" 
+                                               Padding="5,3" />
+                                    </HorizontalStackLayout>
+                                </DataTemplate>
+                            </chart:ColumnSeries.TrackballLabelTemplate>
+                        </chart:ColumnSeries>
+
+                        <chart:ColumnSeries ItemsSource="{Binding MonthlyData}" 
+                                           XBindingPath="Month" 
+                                           YBindingPath="Expense"
+                                           Label="Cheltuieli"
+                                           ShowDataLabels="True"
+                                           Spacing="0.2"
+                                           EnableTooltip="True"
+                                           Fill="#60A5FA">
+                            <chart:ColumnSeries.TrackballLabelTemplate>
+                                <DataTemplate>
+                                    <HorizontalStackLayout>
+                                        <Label Text="{Binding Item.Expense, StringFormat='{0:N0} lei'}" 
+                                               TextColor="White" 
+                                               BackgroundColor="#60A5FA" 
+                                               Padding="5,3" />
+                                    </HorizontalStackLayout>
+                                </DataTemplate>
+                            </chart:ColumnSeries.TrackballLabelTemplate>
+                        </chart:ColumnSeries>
+                    </chart:SfCartesianChart.Series>
+
+                    <chart:SfCartesianChart.Legend>
+                        <chart:ChartLegend ToggleSeriesVisibility="True" />
+                    </chart:SfCartesianChart.Legend>
+                </chart:SfCartesianChart>
+            </Frame>
+
+            <!-- Slider pentru venituri recente -->
+            <Label Text="Venituri Recente" 
+                   FontSize="18" 
+                   FontAttributes="Bold" 
+                   TextColor="#333333"
+                   Margin="0,0,0,10" />
+
+            <CarouselView ItemsSource="{Binding RecentVenituri}"
+                          HeightRequest="180"
+                          IndicatorView="indicatorView"
+                          CurrentItemChanged="OnCarouselViewItemChanged"
+                          PeekAreaInsets="20">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BackgroundColor="White" 
+                               BorderColor="#E8E8E8"
+                               CornerRadius="10"
+                               Margin="5"
+                               Padding="15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Label Grid.Row="0" 
+                                       Text="{Binding Description}" 
+                                       FontSize="18" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#333333" />
+
+                                <Label Grid.Row="1" 
+                                       Text="{Binding Date, StringFormat='{0:d MMMM yyyy}'}" 
+                                       FontSize="14" 
+                                       TextColor="#666666"
+                                       Margin="0,5,0,0" />
+
+                                <Label Grid.Row="2" 
+                                       Text="{Binding Amount, StringFormat='{0:N0} lei'}" 
+                                       FontSize="24" 
+                                       FontAttributes="Bold"
+                                       TextColor="#3B82F6"
+                                       Margin="0,10,0,0" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+
+            <IndicatorView x:Name="indicatorView"
+                           Count="{Binding RecentVenituri.Count}"
+                           IndicatorColor="LightGray"
+                           SelectedIndicatorColor="#3B82F6"
+                           HorizontalOptions="Center"
+                           Margin="0,10,0,20" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:SubtractConverter x:Key="SubtractConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 </ContentPage>
