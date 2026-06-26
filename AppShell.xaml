@@ -9,7 +9,7 @@
 
     <TabBar>
         <ShellContent
-            Title="Bugetul Personal"
+            Title="Buget Personal"
             ContentTemplate="{DataTemplate local:MainPage}"
             />
 
@@ -18,20 +18,15 @@
             ContentTemplate="{DataTemplate local:AboutPage}"
             />
 
+        <ShellContent
+            Title="Venituri"
+            ContentTemplate="{DataTemplate local:VenituriPage}"
+            />
+        
+
     </TabBar>
 
-    <TabBar>
-        <ShellContent
-           Title="Venituri"
-           ContentTemplate="{DataTemplate local:MainPage}"
-           />
 
-        <ShellContent
-           Title="Venituri"
-           ContentTemplate="{DataTemplate local:Venituri}"
-           />
-
-    </TabBar>
     
 </Shell>
 

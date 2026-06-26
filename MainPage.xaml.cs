@@ -8,18 +8,19 @@
         {
             InitializeComponent();
         }
-
-        private void OnCounterClicked(object sender, EventArgs e)
+        private async void OnCheltuieliClicked(object sender, EventArgs e)
         {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            // Navigare către pagina de cheltuieli
+            await Navigation.PushAsync(new AboutPage());
         }
-    }
 
+        private async void OnVenituriClicked(object sender, EventArgs e)
+        {
+            // Navigare către pagina de venituri
+            await Navigation.PushAsync(new VenituriView());
+
+
+        }
+
+    }
 }

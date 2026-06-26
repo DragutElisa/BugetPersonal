@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BugetPersonal.VenituriPage"
+             Title="Lista de venituri">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="10">
+        <Label Text="Lista de venituri" FontSize="24" FontAttributes="Bold" Grid.Row="0" Margin="0,0,0,10" />
+        <RefreshView Grid.Row="1" x:Name="venituriRefreshView" Command="{Binding LoadVenituriCommand}">
+            <CollectionView x:Name="venituriCollection" 
+                          ItemsSource="{Binding Venituri}"
+                          SelectionMode="Single"
+                          SelectionChanged="OnVenituriSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" ColumnDefinitions="*, Auto" RowDefinitions="Auto,Auto">
+                            <Label Grid.Column="0" Grid.Row="0" Text="{Binding Description}" FontAttributes="Bold" />
+                            <Label Grid.Column="0" Grid.Row="1" Text="{Binding Category}" FontSize="Small" TextColor="Gray" />
+                            <Label Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" 
+                                   Text="{Binding Amount, StringFormat='{0:C}'}" 
+                                   VerticalOptions="Center" HorizontalOptions="End" 
+                                   FontAttributes="Bold" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+        <Button Text="Adaugă venit" Grid.Row="2" Clicked="OnAddVenituriClicked" />
+    </Grid>
+</ContentPage>

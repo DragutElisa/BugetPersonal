@@ -1,19 +1,182 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Charts;assembly=Syncfusion.Maui.Charts"
+             xmlns:model="clr-namespace:BugetPersonal.Models"
              x:Class="BugetPersonal.AboutPage"
-             Title="AboutPage">
-    <VerticalStackLayout Spacing="10" Margin="10">
-        <HorizontalStackLayout Spacing="10">
-            <Image Source="budgeting.png"
-                   SemanticProperties.Description="Cheltuieli"
-                   HeightRequest="60"/>
-            <Label FontSize="22" FontAttributes="Bold" Text="Cheltuieli" VerticalOptions="End" />
+             Title="Buget Personal">
 
-        </HorizontalStackLayout>
-        <Label Text="Aici poti vedea pe ce ai cheltuit banii." />
+    <ContentPage.BindingContext>
+        <model:ChartViewModel/>
+    </ContentPage.BindingContext>
 
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Margin="15">
+            <!-- Titlu -->
+            <Label Text="Buget Personal" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center"
+                   Margin="0,10,0,10"/>
 
-    </VerticalStackLayout>
+            <!-- Accesare Cheltuieli -->
+            <Frame BorderColor="LightGray" CornerRadius="10" Padding="10">
+                <HorizontalStackLayout Spacing="10">
+                    <Image Source="budgeting.png"
+                           SemanticProperties.Description="Cheltuieli"
+                           HeightRequest="60">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCheltuieliTapped" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label FontSize="20" FontAttributes="Bold" Text="Cheltuieli" />
+                        <Label Text="Aici poți vedea și gestiona cheltuielile tale." />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Frame>
 
+            <!-- Secțiunea Total Expenses -->
+            <Frame BorderColor="LightGray" CornerRadius="10" Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Total Cheltuieli" 
+                           FontSize="20" 
+                           FontAttributes="Bold"
+                           Margin="0,0,0,5"/>
+
+                    <Label Text="Jun 1 - Nov 30" 
+                           TextColor="Gray"
+                           FontSize="14"
+                           Margin="0,0,0,15"/>
+
+                    <!-- Container pentru grafic și legendă -->
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="*">
+                        <!-- Grafic circular -->
+                        <chart:SfCircularChart Grid.Column="0" HeightRequest="300">
+                            <chart:SfCircularChart.Series>
+                                <chart:PieSeries ItemsSource="{Binding CategoryData}"
+                                               XBindingPath="Category"
+                                               YBindingPath="Amount"
+                                               EnableTooltip="True"
+                                               ShowDataLabels="True"
+                                               ExplodeOnTouch="True"
+                                               PaletteBrushes="{Binding CategoryBrushes}">
+
+                                    <!-- Customizare tooltip pentru a afișa doar categoria -->
+                                    <chart:PieSeries.TooltipTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="10" BackgroundColor="#80000000" >
+                                                <Label Text="{Binding Item.Category}" 
+                                                       TextColor="White" 
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="Center" 
+                                                       VerticalOptions="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </chart:PieSeries.TooltipTemplate>
+
+                                    <!-- Formatarea etichetelor de date din grafic -->
+                                    <chart:PieSeries.DataLabelSettings>
+                                        <chart:CircularDataLabelSettings>
+                                            <chart:CircularDataLabelSettings.LabelStyle>
+                                                <chart:ChartDataLabelStyle TextColor="White" FontSize="10" FontAttributes="Bold"/>
+                                            </chart:CircularDataLabelSettings.LabelStyle>
+                                        </chart:CircularDataLabelSettings>
+                                    </chart:PieSeries.DataLabelSettings>
+                                </chart:PieSeries>
+                            </chart:SfCircularChart.Series>
+                        </chart:SfCircularChart>
+
+                        <!-- Legendă personalizată -->
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="8">
+                            <CollectionView ItemsSource="{Binding CategoryData}" 
+                                          HeightRequest="300" 
+                                          VerticalOptions="Center">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,5">
+                                            <!-- Indicator de culoare -->
+                                            <BoxView Grid.Column="0" 
+                                                     Color="{Binding Color}"
+                                                     WidthRequest="12" 
+                                                     HeightRequest="12"
+                                                     CornerRadius="6"
+                                                     VerticalOptions="Center"
+                                                     Margin="0,0,8,0"/>
+
+                                            <!-- Numele categoriei -->
+                                            <Label Grid.Column="1" 
+                                                   Text="{Binding Category}"
+                                                   VerticalOptions="Center" />
+
+                                            <!-- Suma -->
+                                            <Label Grid.Column="2" 
+                                                   Text="{Binding RawAmount, StringFormat='{0:N0} lei'}"
+                                                   HorizontalOptions="End"
+                                                   VerticalOptions="Center"
+                                                   Margin="10,0" />
+
+                                            <!-- Procentaj -->
+                                            <Label Grid.Column="3" 
+                                                   Text="{Binding Percentage, StringFormat='{0:N2}%'}"
+                                                   HorizontalOptions="End"
+                                                   VerticalOptions="Center"
+                                                   Margin="10,0,0,0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sumar statistici -->
+            <Frame BorderColor="LightGray" CornerRadius="10" Padding="10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Sumarul cheltuielilor" 
+                           FontSize="18" 
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                        <Frame Grid.Column="0" BackgroundColor="#9933CC" Padding="10" Margin="5">
+                            <VerticalStackLayout>
+                                <Label Text="Total Cheltuieli" FontAttributes="Bold" TextColor="White"/>
+                                <Label Text="{Binding TotalAmount, StringFormat='{0:N0} lei'}" FontSize="16" TextColor="White"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <Frame Grid.Column="1" BackgroundColor="#9933CC" Padding="10" Margin="5">
+                            <VerticalStackLayout>
+                                <Label Text="Nr. Tranzacții" FontAttributes="Bold" TextColor="White"/>
+                                <Label Text="{Binding TotalCount}" FontSize="16" TextColor="White"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Secțiunile Account și Income (placeholdere) -->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                <Frame Grid.Column="0" BorderColor="LightGray" CornerRadius="10" Padding="10">
+                    <VerticalStackLayout>
+                        <Label Text="Cont - Sold" 
+                               FontSize="16" 
+                               FontAttributes="Bold"/>
+                        <!-- Conținutul suplimentar pentru cont ar merge aici -->
+                    </VerticalStackLayout>
+                </Frame>
+
+                <Frame Grid.Column="1" BorderColor="LightGray" CornerRadius="10" Padding="10">
+                    <VerticalStackLayout>
+                        <Label Text="Venituri - Cheltuieli" 
+                               FontSize="16" 
+                               FontAttributes="Bold"/>
+                        <!-- Conținutul suplimentar pentru venituri ar merge aici -->
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
